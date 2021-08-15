@@ -11,7 +11,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 #connection to database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:abc123@localhost/postgres'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:tdg123@localhost/teknolandin'
 db=SQLAlchemy(app)
 session =Session(db.engine)
 conn=db.engine.connect()
@@ -84,7 +84,9 @@ def sell_product():
 
 @app.route('/buy_product' , methods=['GET'])
 def buy_product():
-  return render_template('buyProduct.html')
+  query = select([Product]).where(Product.c.owner_id == user_id)
+  sellable_products = conn.execute(query).fetchall()
+  return render_template('buyProduct.html', products=sellable_products)
 
 @app.route('/update_budget' , methods=['GET'])
 def update_budget():
@@ -100,6 +102,10 @@ def update_product():
 
 @app.route('/delete_product' , methods=['GET'])
 def delete_product():
+  return render_template('deleteProduct.html')
+
+@app.route('/cart' , methods=['GET'])
+def show_cart():
   return render_template('deleteProduct.html')
 
 if __name__ == '__main__':

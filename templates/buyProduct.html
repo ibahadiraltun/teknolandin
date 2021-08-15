@@ -3,5 +3,35 @@
 
 {% endblock %}
 {% block body %}
-  
+    <nav class="navbar navbar-light bg-light">
+    <a href="{{url_for('show_cart')}}" class="btn btn-outline-primary" > Cart </a>
+    <form class="form-inline" style="margin-left:auto">
+        <a href="{{url_for('update_user')}}" class="btn btn-info" > User Settings </a>
+        <a href="{{url_for('update_budget')}}" class="btn btn-outline-success" style="margin-left:5px" > Update Budget </a>
+    </form>
+  </nav>
+
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Short Name</th>
+        <th scope="col">Category</th>
+        <th scope="col">Price(TL)</th>
+      </tr>
+    </thead>
+    <tbody>
+        {%for product in products%}
+            <tr>
+                <td>{{product.name}}</td>
+                <td>{{product.shortname}}</td>
+                <td>{{product.category}}</td>
+                <td>{{product.price}}</td>
+                <td>
+                  <a href="{{url_for('show_cart', product_id=product.product_id)}}" class="btn btn-outline-primary" > Add to Cart</a>
+                </td>
+            </tr>
+        {%endfor%}
+    </tbody>
+  </table>
 {% endblock %}
