@@ -16,14 +16,11 @@ db=SQLAlchemy(app)
 session =Session(db.engine)
 conn=db.engine.connect()
 
-# #tables
-# City = db.Table('city', db.metadata, autoload=True, autoload_with=db.engine)
+user_id = -1
+
+#tables
 User = db.Table('users', db.metadata, autoload=True, autoload_with=db.engine)
-# UsersLog = db.Table('userslog', db.metadata, autoload=True, autoload_with=db.engine)
-# Conf = db.Table('conference', db.metadata, autoload=True, autoload_with=db.engine)
-# ConfRole = db.Table('conferenceroles', db.metadata, autoload=True, autoload_with=db.engine)
-# ConfUpdate = db.Table('conferenceupdates', db.metadata, autoload=True, autoload_with=db.engine)
-# Submission = db.Table('submissions', db.metadata, autoload=True, autoload_with=db.engine)
+Product = db.Table('products', db.metadata, autoload=True, autoload_with=db.engine)
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -32,6 +29,11 @@ def login():
     password= request.form['password']
     query= select([User.c.password]).where(User.c.email == email)
     db_password= conn.execute(query).fetchone()
+
+    query= select([User.c.userid]).where(User.c.email == email)
+    global user_id
+    user_id = conn.execute(query).fetchone()[0]
+    
     if(db_password != None and  password == db_password[0] ):
       return redirect(url_for('main'))
     else:
@@ -42,13 +44,7 @@ def login():
 
 @app.route('/main', methods=['GET'])
 def main():
-  #  if request.method == 'POST':
-  #     if (request.form['form_type'] == 'user'):
-  #        return handle_status_change(form = request.form, model = 'User')
-  #     return handle_status_change(form = request.form, model = 'Conference')
-  #  else:
   return render_template('main.html')
-
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
@@ -63,7 +59,7 @@ def signup():
     error=''
     if(password != confirmpassword):
       error = 'Passwords do not match!!' 
-      
+
     if(error == ''):
       new_user= User.insert().values(
         name=name,
@@ -79,6 +75,32 @@ def signup():
       return render_template('signup.html')
   else:
     return render_template('signup.html')
+
+@app.route('/sell_product' , methods=['GET'])
+def sell_product():
+  query=select([Product]).where(Product.c.owner_id == user_id)
+  sellable_products = conn.execute(query).fetchall()
+  return render_template('sellProduct.html', products = sellable_products)
+
+@app.route('/buy_product' , methods=['GET'])
+def buy_product():
+  return render_template('buyProduct.html')
+
+@app.route('/update_budget' , methods=['GET'])
+def update_budget():
+  return render_template('updateBudget.html')
+
+@app.route('/update_user' , methods=['GET'])
+def update_user():
+  return render_template('updateUser.html')
+
+@app.route('/update_product' , methods=['GET'])
+def update_product():
+  return render_template('updateProduct.html')
+
+@app.route('/delete_product' , methods=['GET'])
+def delete_product():
+  return render_template('deleteProduct.html')
 
 if __name__ == '__main__':
    app.run(debug = True)
