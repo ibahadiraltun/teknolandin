@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block head %} 
+<style>
+.error {
+    font-size:18px;
+    color:#cc0000; 
+    margin-top:30px
+}
+.form-group {
+    margin-bottom: 10px;
+}
+.login-form {
+    width: 500px;
+    margin: 8px auto;
+  	font-size: 15px;
+}
+.login-form form {
+    margin-bottom: 10px;
+    background: #ffffff;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+}
+.login-form h2 {
+    margin: 0 0 5 5px;
+}
+body{
+    background: #f7f7f7;
+}
+</style>
+{%endblock%}
+
+{% block body %}
+<div class="error text-center">{{error}}</div>
+<div class="login-form">
+  <form action = "" method = "post" class="form-signin">
+    <h2 class="text-center">Sign Up</h2>       
+    <div class="form-group">
+      <input type="text" class="form-control" name="name" placeholder="Name" required="required">
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="lastname" placeholder="Lastname" required="required" >
+    </div>
+    <div class="form-group">
+      <input type="email" class="form-control" name="email" placeholder="Email" required="required" >
+    </div>
+    <div class="form-group">
+      <input type="tel" class="form-control" name="phone" placeholder="888 888 8888" pattern="[0-9]{3} [0-9]{3} [0-9]{4}" maxlength="12"   required/>    
+      <label style="font-size:10px;padding-left:20px"> Eg : 552 222 2224  </label>         
+    </div>
+    
+    <div class="form-group">
+      <input type="text" class="form-control" name="address" placeholder="Address" required="required" >
+    </div>
+    
+    <div class="form-group">
+        <input type="password" class="form-control" name="password" placeholder="Password" minlength="4" required="required" >
+    </div>
+    <div class="form-group">
+        <input type="password" class="form-control" name="confirmpassword" placeholder="Confirm Password" required="required">
+    </div>
+    <div class="form-group">
+        <button type="submit" name="submit" class="btn btn-lg btn-primary btn-block">Sign Up</button>
+    </div>
+          
+  </form>
+
+</div>
+
+{%endblock%}

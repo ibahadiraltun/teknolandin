@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block head %}   
+<style>
+.center {
+    margin-left: 45%;
+}
+.name {
+    margin-left: 40%;
+}
+.tick {
+    background-color: Transparent;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+    margin-left: 90px;
+}
+.cross {
+    background-color: Transparent;
+    border: none;
+    cursor: pointer;
+    overflow: hidden;
+    outline: none;
+    margin-left: 10px;
+}
+.error {
+    font-size:18px;
+    color:#cc0000; 
+    margin-top:30px
+}
+.main-page {
+    margin: 50px 50px;
+  	font-size: 15px;
+}
+.vertical-menu {
+    width: 800px;
+    height: 450px;
+    overflow-y: auto;
+}
+
+.vertical-menu a {
+    background-color: #eee;
+    color: black;
+    display: block;
+    padding: 12px;
+    text-decoration: none;
+}
+
+.vertical-menu a:hover {
+    background-color: #ccc;
+}
+
+.vertical-menu a.active {
+    background-color: #4CAF50;
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+
+<!-- <div class="error text-center"></div>
+<div class="main-page">
+   <form action="" method="post">
+      <input type="hidden" name="form_type" value="user">
+      <tbody>
+         <h1>User Requests</h1>
+         <div class="vertical-menu">
+               <a href="#" class="active">
+                  <span class="center">
+                     Users
+                  </span>
+               </a>
+               {% for usr in users %}
+                  <a>
+                     <span class="name">{{ usr.name}}-{{usr.lname}}-{{usr.primary_email}}</span>
+                     <button type="submit" name="submit_tick" value="{{ usr.authenticationid }}" class="tick"> &#9989; </button>
+                     <button type="submit" name="submit_cross" value="{{ usr.authenticationid }}" class="cross"> &#10060; </button>
+                  </a>
+               {% endfor %}
+         </div>
+      </tbody>
+   </form>
+   <form action="" method="post">
+      <input type="hidden" name="form_type" value="conf">
+      <tbody>
+         <h1>Conference Requests</h1>
+         <div class="vertical-menu">
+               <a href="#" class="active">
+                  <span class="center">
+                     Conferences
+                  </span>
+               </a>
+               {% for conf in confs %}
+                  <a id="conf">
+                     <span class="name">{{ conf.confid }}</span>
+                     <button type="submit" name="submit_tick" value="{{ conf.confid }} - {{ conf.creator_user }}" class="tick"> &#9989; </button>
+                     <button type="submit" name="submit_cross" value="{{ conf.confid }} - {{ conf.creator_user }}" class="cross"> &#10060; </button>
+                  </a>
+               {% endfor %}
+         </div>
+      </tbody>
+   </form>
+</div> -->
+
+{% endblock %}

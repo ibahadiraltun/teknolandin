@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block head %}   
+<style>
+.error {
+    font-size:18px;
+    color:#cc0000; 
+    margin-top:30px
+}
+.login-form {
+    width: 350px;
+    margin: 80px auto;
+  	font-size: 15px;
+}
+.login-form form {
+    margin-bottom: 20px;
+    background: #f7f7f7;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    padding: 30px;
+}
+.login-form h2 {
+    margin: 0 0 15px;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div class="error text-center">{{error}}</div>
+
+
+<div class="login-form">
+    <form action = "" method = "post">
+        <h2 class="text-center">Log in</h2>       
+        <div class="form-group">
+            <input type="text" class="form-control" name="email" placeholder="Email" required="required" autofocus>
+        </div>
+        <div class="form-group">
+            <input type="password" class="form-control" name="password" placeholder="Password" required="required">
+        </div>
+        <div class="form-group">
+            <button type="submit" name="submit" class="btn btn-lg btn-primary btn-block">Log in</button>
+        </div>
+               
+    </form>
+    <p class="text-center"><a href="/signup">Create an Account</a></p>
+</div>
+{% endblock %}
