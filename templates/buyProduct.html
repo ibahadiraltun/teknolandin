@@ -17,6 +17,8 @@
         <th scope="col">Name</th>
         <th scope="col">Short Name</th>
         <th scope="col">Category</th>
+          <th scope="col">Price(TL) without sale</th>
+        <th scope="col">Sale %</th>
         <th scope="col">Price(TL)</th>
       </tr>
     </thead>
@@ -26,7 +28,10 @@
                 <td>{{product.name}}</td>
                 <td>{{product.shortname}}</td>
                 <td>{{product.category}}</td>
-                <td>{{product.price}}</td>
+                <td>{{product.price }}</td>
+                <td>% {{product.salePercentage}}</td>
+                <td>{{product.price - (product.price * product.salePercentage/100) }}</td>
+
                 <td>
                   <a href="{{url_for('show_cart', product_id=product.product_id)}}" class="btn btn-outline-primary" > Add to Cart</a>
                 </td>

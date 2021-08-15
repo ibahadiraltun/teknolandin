@@ -79,12 +79,15 @@ def signup():
 @app.route('/sell_product' , methods=['GET'])
 def sell_product():
   query=select([Product]).where(Product.c.owner_id == user_id)
-  sellable_products = conn.execute(query).fetchall()
+  str = """SELECT products.product_id, products.owner_id, products.name, products.shortname, products.category, products.publish_date, products.price, products.stock, products."salePercentage" 
+    FROM products 
+    WHERE products.owner_id = 99999"""
+  sellable_products = conn.execute(str).fetchall()
   return render_template('sellProduct.html', products = sellable_products)
 
 @app.route('/buy_product' , methods=['GET'])
 def buy_product():
-  query = select([Product]).where(Product.c.owner_id == user_id)
+  query = select([Product]).where(Product.c.owner_id != user_id)
   sellable_products = conn.execute(query).fetchall()
   return render_template('buyProduct.html', products=sellable_products)
 
@@ -106,7 +109,7 @@ def delete_product():
 
 @app.route('/cart' , methods=['GET'])
 def show_cart():
-  return render_template('deleteProduct.html')
+  return render_template('cart.html')
 
 if __name__ == '__main__':
    app.run(debug = True)
