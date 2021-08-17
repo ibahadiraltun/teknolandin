@@ -4,10 +4,11 @@
 {% endblock %}
 {% block body %}
 <nav class="navbar navbar-light bg-light">
-    <a href="{{url_for('buy_product')}}" class="btn btn-outline-primary" > Buy Product </a>
+    <a href="{{url_for('buy_product')}}" class="btn btn-primary" > Buy Product </a>
+    <a href="{{url_for('update_user')}}" class="btn btn-primary" style="margin-left:5px" > User Settings </a>
+    <a href="{{url_for('update_budget')}}" class="btn btn-primary" style="margin-left:5px" > Update Budget </a>
     <form class="form-inline" style="margin-left:auto">
-        <a href="{{url_for('update_user')}}" class="btn btn-info" > User Settings </a>
-        <a href="{{url_for('update_budget')}}" class="btn btn-outline-success" style="margin-left:5px" > Update Budget </a>
+      <a href="{{url_for('add_product')}}" class="btn btn-success" style="margin-left:5px" > Add Product </a>
     </form>
   </nav>
   
@@ -34,8 +35,8 @@
                 <td>{{product.price}}</td>
                 <td>{{product.stock}}</td>
                 <td>
-                  <a href="{{url_for('update_product', product_id=product.product_id)}}" class="btn btn-outline-primary" > Update</a>
-                  <a href="{{url_for('delete_product', product_id=product.product_id)}}" class="btn btn-outline-danger" > Delete</a>
+                  <a href="{{url_for('update_product', product_id=product.product_id)}}" class="btn btn-outline-primary" > Update </a>
+                  <a href="{{url_for('delete_product', product_id=product.product_id)}}" class="btn btn-outline-danger" > Delete </a>
                 </td>
             </tr>
         {%endfor%}
