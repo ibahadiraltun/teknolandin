@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import select, update, and_
+from sqlalchemy import select, update, and_, func
 from sqlalchemy.orm import Session
 import psycopg2
 from datetime import datetime
@@ -11,7 +11,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # connection to database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:abc123@localhost/postgres'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:tdg123@localhost/teknolandin'
 db = SQLAlchemy(app)
 session = Session(db.engine)
 conn = db.engine.connect()
@@ -22,12 +22,15 @@ user_id = -1
 # tables
 User = db.Table('users', db.metadata, autoload=True, autoload_with=db.engine)
 Product = db.Table('products', db.metadata, autoload=True, autoload_with=db.engine)
+Product_sold = db.Table('product_sold', db.metadata, autoload=True, autoload_with=db.engine)
+
 
 def getUser(user_id):
     query = select([User]).where(User.c.userid == user_id)
     executed = conn.execute(query).fetchall()
     user = executed[0]
     return user
+
 
 def define_cart(user_id):
     product_list = list()
@@ -77,44 +80,46 @@ def login():
 
 @app.route('/main', methods=['GET'])
 def main():
-    return render_template('main.html',user_id=user_id)
+    return render_template('main.html', user_id=user_id)
 
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
-  if request.method == 'POST':
-    name = request.form['name']
-    lastname = request.form['lastname']
-    email = request.form['email']
-    phone = request.form['phone']
-    address = request.form['address']
-    password = request.form['password']
-    confirmpassword = request.form['confirmpassword']
-    error = ''
-    if (password != confirmpassword):
-      error = 'Passwords do not match!!' 
+    if request.method == 'POST':
+        name = request.form['name']
+        lastname = request.form['lastname']
+        email = request.form['email']
+        phone = request.form['phone']
+        address = request.form['address']
+        password = request.form['password']
+        confirmpassword = request.form['confirmpassword']
+        error = ''
+        if (password != confirmpassword):
+            error = 'Passwords do not match!!'
 
-    if(error == ''):
-      new_user = User.insert().values(
-        name = name,
-        lname = lastname,
-        email = email,
-        password = password,
-        phone = phone,
-        address = address
-      )
-      conn.execute(new_user)
-      return redirect(url_for('login'))
-    else:
-      return render_template('signup.html')
+        if (error == ''):
+            new_user = User.insert().values(
+                name=name,
+                lname=lastname,
+                email=email,
+                password=password,
+                phone=phone,
+                address=address
+            )
+            conn.execute(new_user)
+            return redirect(url_for('login'))
+        else:
+            return render_template('signup.html')
 
-  return render_template('signup.html')
+    return render_template('signup.html')
+
 
 @app.route('/sell_product', methods=['GET'])
 def sell_product():
-  query = select([Product]).where(Product.c.owner_id == user_id)
-  sellable_products = conn.execute(query).fetchall()
-  return render_template('sellProduct.html', products = sellable_products)
+    query = select([Product]).where(Product.c.owner_id == user_id)
+    sellable_products = conn.execute(query).fetchall()
+    return render_template('sellProduct.html', products=sellable_products)
+
 
 @app.route('/buy_product', methods=['GET'])
 def buy_product():
@@ -123,77 +128,93 @@ def buy_product():
     return render_template('buyProduct.html', products=sellable_products, user_id=user_id)
 
 
-@app.route('/update_budget', methods=['GET'])
+@app.route('/update_budget', methods=['POST', 'GET'])
 def update_budget():
-    return render_template('updateBudget.html')
+    if request.method == 'POST':
+        cardNumber = request.form['card-number']  # It is a dummy data
+        budget = request.form['budget']
+
+        query = update(User).where(User.c.userid == user_id).values(budget=User.c.budget + budget)
+        conn.execute(query)
+        query = select([User]).where(User.c.userid == user_id)
+        user = conn.execute(query).first()
+        return render_template('updateBudgetResult.html', budget=user.budget)
+    else:
+        return render_template('updateBudget.html')
+
 
 @app.route('/update_user', methods=['GET'])
 def update_user():
     return render_template('updateUser.html')
 
+
 @app.route('/add_product', methods=['GET', 'POST'])
 def add_product():
-  if request.method == 'POST':
-    name = request.form['name']
-    sname = request.form['shortname']
-    category = request.form['category']
-    publish_date = request.form['publish_date']
-    price = request.form['price']
-    stock = request.form['stock']
+    if request.method == 'POST':
+        name = request.form['name']
+        sname = request.form['shortname']
+        category = request.form['category']
+        publish_date = request.form['publish_date']
+        price = request.form['price']
+        stock = request.form['stock']
 
-    owner_id = user_id
-    query = Product.insert().values(
-      owner_id = owner_id,
-      name = name,
-      shortname = sname,
-      category = category,
-      publish_date = publish_date,
-      price = price,
-      stock = stock
-    )
-    conn.execute(query)
-    return redirect(url_for('sell_product'))
-  
-  return render_template('updateProduct.html', product = {})
+        owner_id = user_id
+        query = Product.insert().values(
+            owner_id=owner_id,
+            name=name,
+            shortname=sname,
+            category=category,
+            publish_date=publish_date,
+            price=price,
+            stock=stock
+        )
+        conn.execute(query)
+        return redirect(url_for('sell_product'))
 
-@app.route('/update_product/<product_id>' , methods=['GET', 'POST'])
+    return render_template('updateProduct.html', product={})
+
+
+@app.route('/update_product/<product_id>', methods=['GET', 'POST'])
 def update_product(product_id):
-  query = select([Product]).where(Product.c.product_id == product_id)
-  product = conn.execute(query).fetchone()
+    query = select([Product]).where(Product.c.product_id == product_id)
+    product = conn.execute(query).fetchone()
 
-  if request.method == 'POST':
-    name = request.form['name']
-    sname = request.form['shortname']
-    category = request.form['category']
-    publish_date = request.form['publish_date']
-    price = request.form['price']
-    stock = request.form['stock']
+    if request.method == 'POST':
+        name = request.form['name']
+        sname = request.form['shortname']
+        category = request.form['category']
+        publish_date = request.form['publish_date']
+        price = request.form['price']
+        stock = request.form['stock']
 
-    owner_id = user_id
-    query = update(Product).where(Product.c.product_id == product_id).values(
-      product_id = product_id,
-      owner_id = owner_id,
-      name = name,
-      shortname = sname,
-      category = category,
-      publish_date = publish_date,
-      price = price,
-      stock = stock
-    )
+        owner_id = user_id
+        query = update(Product).where(Product.c.product_id == product_id).values(
+            product_id=product_id,
+            owner_id=owner_id,
+            name=name,
+            shortname=sname,
+            category=category,
+            publish_date=publish_date,
+            price=price,
+            stock=stock
+        )
+        conn.execute(query)
+        return redirect(url_for('sell_product'))
+
+    return render_template('updateProduct.html', product=product)
+
+
+@app.route('/delete_product/<product_id>', methods=['GET'])
+def delete_product(product_id):
+    query = Product.delete().where(Product.c.product_id == product_id)
     conn.execute(query)
     return redirect(url_for('sell_product'))
-  
-  return render_template('updateProduct.html', product = product)
 
-@app.route('/delete_product/<product_id>' , methods=['GET'])
-def delete_product(product_id):
-  query = Product.delete().where(Product.c.product_id == product_id)
-  conn.execute(query)
-  return redirect(url_for('sell_product'))
 
 def update_cart_of_user(user, new_cart):
     global cart
     cart[user] = new_cart
+
 
 @app.route('/add_item/<int:product_id>', methods=['GET', 'POST'])
 def add_item(product_id):
@@ -248,6 +269,35 @@ def change_budget(user_id_on, budget):
     session.commit()
 
 
+def update_product_sold(user_id_on, user_cart):
+    for item in user_cart:
+        prod_id = item[0]
+        usr_id = user_id_on
+        prod_name = item[2]
+        prod_price = item[6]
+        max_id_query = """SELECT max(product_sold.satis_id) AS max_1 
+        FROM product_sold"""
+        max_id = conn.execute(max_id_query).fetchall()[0][0]
+        session.commit()
+        if max_id is None:
+            max_id = 0;
+        max_id = max_id + 1
+        print(max_id)
+        a = session.query(func.max(Product_sold.c.satis_id))
+        stmt = """INSERT INTO product_sold (satis_id,user_id, product_id,product_name,price,is_returned)
+                VALUES ({max_id}, {user_id}, {product_id},'{product_name}',{price},0)""".format(max_id=max_id,
+                                                                                                user_id=usr_id,
+                                                                                                product_id=prod_id,
+                                                                                                product_name=prod_name,
+                                                                                                price=prod_price)
+        conn.execute(stmt)
+        session.commit()
+        # insert = [Product_sold].insert().values(user_id=usr_id, product_id=prod_id, product_name=prod_name, product_price = prod_price )
+        # Product_sold.insert().values(user_id=usr_id, product_id=prod_id, product_name=prod_name,
+        #                              product_price=prod_price)
+        # session.commit()
+
+
 @app.route('/check_buy/<int:user_id_on>')
 def check_buy(user_id_on):
     user = getUser(user_id_on)
@@ -259,6 +309,7 @@ def check_buy(user_id_on):
     if budget >= total_price:
         budget = budget - total_price
         change_budget(user_id_on, budget)
+        update_product_sold(user_id_on, user_cart)
         user_cart = list()
         update_cart_of_user(user_id, user_cart)
         return redirect(url_for('main'))
@@ -266,6 +317,27 @@ def check_buy(user_id_on):
         return render_template('cart.html', cart=user_cart, total_price=total_price)
 
 
-if __name__ == '__main__':
-  app.run(debug = True)
+@app.route('/return_product')
+def return_page():
+    query = """SELECT product_sold.satis_id, product_sold.user_id, product_sold.product_id, product_sold.product_name, product_sold.price 
+                FROM product_sold 
+                WHERE product_sold.user_id = {user_id} AND product_sold.is_returned = 0 """.format(user_id=user_id)
+    products_sold = conn.execute(query).fetchall()
+    return render_template('return_product.html', products=products_sold, usr=user_id)
 
+
+@app.route('/return_a_product/<int:satis_id>')
+def return_a_product(satis_id):
+    session.query(Product_sold).filter(Product_sold.c.satis_id == satis_id).update({Product_sold.c.is_returned: 1}, synchronize_session=False)
+    session.commit()
+
+    query = """SELECT product_sold.satis_id, product_sold.user_id, product_sold.product_id, product_sold.product_name, product_sold.price 
+                        FROM product_sold 
+                        WHERE product_sold.user_id = {user_id} AND product_sold.is_returned = 0 """.format(
+        user_id=user_id)
+    products_sold = conn.execute(query).fetchall()
+    return render_template('return_product.html', products=products_sold, usr=user_id)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)

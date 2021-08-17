@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block head %}   
+
+{% endblock %}
+{% block body %}
+<nav class="navbar navbar-light bg-light">
+<a href="{{url_for('buy_product')}}" class="btn btn-outline-primary" > Buy Product </a>
+<form class="form-inline" style="margin-left:auto">
+    <a href="{{url_for('update_user')}}" class="btn btn-info" > User Settings </a>
+    <a href="{{url_for('update_budget')}}" class="btn btn-outline-success" style="margin-left:5px" > Update Budget </a>
+</form>
+</nav>
+    Your budget updated: {{budget}}
+
+{% endblock %}

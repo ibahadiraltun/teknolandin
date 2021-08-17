@@ -1,7 +1,7 @@
 {% extends "datatable.html" %}
 {% block inside_body %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <a class="navbar-brand" href="/main">Teknoland</a>
+        <a class="navbar-brand" href="/">Teknoland</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
             aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -18,8 +18,8 @@
                 <a href="{{url_for('sell_product')}}" class="nav-item nav-link" > Sell Product </a>
             {% endif %}
             {% if user_id != -1 %}
-                <a href="{{url_for('return_page')}}" class="nav-item nav-link" > Previous Purchases & Return a Product </a>
                 <a href="{{url_for('show_cart')}}" class="nav-item nav-link" > Cart </a>
+                <a href="{{url_for('buy_product')}}" class="nav-item nav-link" > Buy Product </a>
                 <a href="{{url_for('update_budget')}}" class="nav-item nav-link" > Update Budget </a>
                 <a href="{{url_for('update_user')}}" class="nav-item nav-link" > User Settings </a>
             {% else %}
@@ -43,10 +43,6 @@
 
         <thead>
             <th>Name</th>
-            <th>Short Name</th>
-            <th>Category</th>
-            <th>Price(TL) without sale</th>
-            <th>Sale %</th>
             <th>Price(TL)</th>
         </thead>
 {#    <thead>#}
@@ -62,14 +58,10 @@
     <tbody>
         {% for product in products %}
             <tr>
-                <td>{{product.name}}</td>
-                <td>{{product.shortname}}</td>
-                <td>{{product.category}}</td>
+                <td>{{product.product_name}}</td>
                 <td>{{product.price }}</td>
-                <td>{{product.salePercentage}}</td>
-                <td>{{product.price - (product.price * product.salePercentage/100) }}</td>
                 <td>
-                  <a href="{{url_for('add_item', product_id=product.product_id)}}" class="btn btn-outline-primary" > Add to Cart</a>
+                  <a href="{{url_for( 'return_a_product' , satis_id=product.satis_id) }}" class="btn btn-outline-primary" > Return Product</a>
                 </td>
             </tr>
         {%endfor%}
