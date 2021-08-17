@@ -95,34 +95,39 @@ def main():
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
-    if request.method == 'POST':
-        name = request.form['name']
-        lastname = request.form['lastname']
-        email = request.form['email']
-        phone = request.form['phone']
-        address = request.form['address']
-        password = request.form['password']
-        confirmpassword = request.form['confirmpassword']
-        error = ''
-        if (password != confirmpassword):
-            error = 'Passwords do not match!!'
+  if request.method == 'POST':
+    name = request.form['name']
+    lastname = request.form['lastname']
+    email = request.form['email']
+    phone = request.form['phone']
+    address = request.form['address']
+    password = request.form['password']
+    confirmpassword = request.form['confirmpassword']
+    error = ''
+    if (password != confirmpassword):
+      error = 'Passwords do not match!!' 
 
-        if (error == ''):
-            new_user = User.insert().values(
-                name=name,
-                lname=lastname,
-                email=email,
-                password=password,
-                phone=phone,
-                address=address
-            )
-            conn.execute(new_user)
-            return redirect(url_for('login'))
-        else:
-            return render_template('signup.html')
+    if(error == ''):
+      new_user = User.insert().values(
+        name = name,
+        lname = lastname,
+        email = email,
+        password = password,
+        phone = phone,
+        address = address
+      )
+      conn.execute(new_user)
+      return redirect(url_for('login'))
+    else:
+      return render_template('signup.html', user = {})
 
-    return render_template('signup.html')
+  return render_template('signup.html', user = {})
 
+@app.route('/logout_user', methods=['GET'])
+def logout_user():
+  global user_id
+  user_id = -1
+  return redirect(url_for('login'))
 
 @app.route('/sell_product', methods=['GET'])
 def sell_product():
@@ -153,9 +158,37 @@ def update_budget():
         return render_template('updateBudget.html')
 
 
-@app.route('/update_user', methods=['GET'])
+@app.route('/update_user', methods=['GET', 'POST'])
 def update_user():
-    return render_template('updateUser.html')
+  query = select([User]).where(User.c.userid == user_id)
+  current_user = conn.execute(query).fetchone()
+  if request.method == 'POST':
+    name = request.form['name']
+    lastname = request.form['lastname']
+    email = request.form['email']
+    phone = request.form['phone']
+    address = request.form['address']
+    password = request.form['password']
+    confirmpassword = request.form['confirmpassword']
+    error = ''
+    if (password != confirmpassword):
+      error = 'Passwords do not match!!' 
+
+    if(error == ''):
+      new_user = User.update().where(User.c.userid == user_id).values(
+        name = name,
+        lname = lastname,
+        email = email,
+        password = password,
+        phone = phone,
+        address = address
+      )
+      conn.execute(new_user)
+      return redirect(url_for('main'))
+    
+    return redirect(url_for('update_user'))
+
+  return render_template('signup.html', user = current_user)
 
 
 @app.route('/add_product', methods=['GET', 'POST'])

@@ -15,8 +15,9 @@
 }
 </style>
 
-<body>
+<!-- <div class="error text-center">{{error}}</div> -->
 
+<body>
      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <a class="navbar-brand" href="/main">Teknoland</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
@@ -40,6 +41,7 @@
                 <a href="{{url_for('buy_product')}}" class="nav-item nav-link" > Buy Product </a>
                 <a href="{{url_for('update_budget')}}" class="nav-item nav-link" > Update Budget </a>
                 <a href="{{url_for('update_user')}}" class="nav-item nav-link" > User Settings </a>
+                <a href="{{url_for('logout_user')}}" class="nav-item nav-link" > Logout </a>
             {% else %}
                 <a class="nav-item nav-link" href="/">Login</a>
             {% endif %}
