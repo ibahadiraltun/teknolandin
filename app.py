@@ -11,7 +11,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # connection to database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:tdg123@localhost/teknolandin'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:abc123@localhost/postgres'
 db = SQLAlchemy(app)
 session = Session(db.engine)
 conn = db.engine.connect()
@@ -78,9 +78,19 @@ def login():
         return render_template('login.html')
 
 
-@app.route('/main', methods=['GET'])
+@app.route('/main', methods=['GET', 'POST'])
 def main():
-    return render_template('main.html', user_id=user_id)
+  if (request.method == 'POST'):
+    qq = request.form['sql_query']
+    res = []
+    err = ''
+    try:
+      res = conn.execute(qq).fetchall()
+    except:
+      err = 'There is error with the given query.'
+    return render_template('main.html', user_id = user_id, sql_result = res, error = err)
+  
+  return render_template('main.html', user_id = user_id)
 
 
 @app.route('/signup', methods=['POST', 'GET'])

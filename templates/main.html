@@ -44,11 +44,27 @@
                 <a class="nav-item nav-link" href="/">Login</a>
             {% endif %}
         </div>
-</nav>
-
-
-
-
-
+      </nav>
 </body>
+
+{% if user_id == 99999 %}
+
+  <form method="post">
+    <textarea id="sql_query" name="sql_query" rows="4" cols="100">
+      Write your SQL query.
+    </textarea>  
+    <button type="submit" name="submit"> Query </button>
+  </form>
+
+  <div>
+    {{ error }}
+    {%for res in sql_result%}
+      <div>
+        {{ res }}
+      </div>
+    {%endfor%}
+  </div>
+{% endif %}
+
+
 {% endblock %}
