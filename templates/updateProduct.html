@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block head %} 
+<style>
+.error {
+    font-size:18px;
+    color:#cc0000; 
+    margin-top:30px
+}
+.form-group {
+    margin-bottom: 10px;
+}
+.product-form {
+    width: 500px;
+    margin: 8px auto;
+    font-size: 15px;
+}
+.product-form form {
+    margin-bottom: 10px;
+    background: #ffffff;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+}
+.product-form h2 {
+    margin: 0 0 5 5px;
+}
+
+body{
+    background: #f7f7f7;
+}
+</style>
+{%endblock%}
+
+{% block body %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script>
+$( function() {
+    $( "#datepicker" ).datepicker();
+} );
+</script>
+<div class="product text-center"> </div>
+<div class="product-form">
+    <form action = "" method = "post" class="form-signin">
+        <h2 class="text-center">Product Form</h2>
+        <div class="form-group">
+            <input type="text" class="form-control" name="name" placeholder="Product Name" required="required" value="{{product.name}}" >
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" name="shortname" placeholder="Short Name" required="required" value="{{product.shortname}}">
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" name="category" placeholder="Category" required="required" value="{{product.category}}" >
+        </div>
+        <div class="form-group">
+            <input id="datepicker" type="date" data-date="" data-date-format="DD/MM/YYYY" class="form-control" name="publish_date" placeholder="Publish Date" required="required" value="{{product.publish_date}}">
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" name="price" placeholder="Price" required="required" value="{{product.price}}" >
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" name="stock" placeholder="Stock" required="required" value="{{product.stock}}" >
+        </div>
+        {%if product != {} %}
+          <button type="submit" name="submit" class="btn btn-lg btn-primary btn-block"> Update </button>
+        {%else%}  
+          <button type="submit" name="submit" class="btn btn-lg btn-primary btn-block"> Add </button>
+        {%endif%}
+        </div>
+            
+    </form>
+    
+</div>
+
+{%endblock%}

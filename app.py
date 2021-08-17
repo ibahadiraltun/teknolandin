@@ -11,27 +11,23 @@ from datetime import datetime
 app = Flask(__name__)
 
 # connection to database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:tdg123@localhost/teknolandin'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:abc123@localhost/postgres'
 db = SQLAlchemy(app)
 session = Session(db.engine)
 conn = db.engine.connect()
 
+cart = {}
 user_id = -1
 
 # tables
 User = db.Table('users', db.metadata, autoload=True, autoload_with=db.engine)
 Product = db.Table('products', db.metadata, autoload=True, autoload_with=db.engine)
 
-
 def getUser(user_id):
     query = select([User]).where(User.c.userid == user_id)
     executed = conn.execute(query).fetchall()
     user = executed[0]
     return user
-
-
-global cart
-
 
 def define_cart(user_id):
     product_list = list()
@@ -86,44 +82,39 @@ def main():
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
-    if request.method == 'POST':
-        name = request.form['name']
-        lastname = request.form['lastname']
-        email = request.form['email']
-        phone = request.form['phone']
-        address = request.form['address']
-        password = request.form['password']
-        confirmpassword = request.form['confirmpassword']
-        error = ''
-        if (password != confirmpassword):
-            error = 'Passwords do not match!!'
+  if request.method == 'POST':
+    name = request.form['name']
+    lastname = request.form['lastname']
+    email = request.form['email']
+    phone = request.form['phone']
+    address = request.form['address']
+    password = request.form['password']
+    confirmpassword = request.form['confirmpassword']
+    error = ''
+    if (password != confirmpassword):
+      error = 'Passwords do not match!!' 
 
-        if (error == ''):
-            new_user = User.insert().values(
-                name=name,
-                lname=lastname,
-                email=email,
-                password=password,
-                phone=phone,
-                address=address
-            )
-            conn.execute(new_user)
-            return redirect(url_for('login'))
-        else:
-            return render_template('signup.html')
+    if(error == ''):
+      new_user = User.insert().values(
+        name = name,
+        lname = lastname,
+        email = email,
+        password = password,
+        phone = phone,
+        address = address
+      )
+      conn.execute(new_user)
+      return redirect(url_for('login'))
     else:
-        return render_template('signup.html')
+      return render_template('signup.html')
 
+  return render_template('signup.html')
 
 @app.route('/sell_product', methods=['GET'])
 def sell_product():
-    query = select([Product]).where(Product.c.owner_id == user_id)
-    str = """SELECT products.product_id, products.owner_id, products.name, products.shortname, products.category, products.publish_date, products.price, products.stock, products."salePercentage" 
-    FROM products 
-    WHERE products.owner_id = 99999"""
-    sellable_products = conn.execute(str).fetchall()
-    return render_template('sellProduct.html', products=sellable_products)
-
+  query = select([Product]).where(Product.c.owner_id == user_id)
+  sellable_products = conn.execute(query).fetchall()
+  return render_template('sellProduct.html', products = sellable_products)
 
 @app.route('/buy_product', methods=['GET'])
 def buy_product():
@@ -136,26 +127,73 @@ def buy_product():
 def update_budget():
     return render_template('updateBudget.html')
 
-
 @app.route('/update_user', methods=['GET'])
 def update_user():
     return render_template('updateUser.html')
 
+@app.route('/add_product', methods=['GET', 'POST'])
+def add_product():
+  if request.method == 'POST':
+    name = request.form['name']
+    sname = request.form['shortname']
+    category = request.form['category']
+    publish_date = request.form['publish_date']
+    price = request.form['price']
+    stock = request.form['stock']
 
-@app.route('/update_product', methods=['GET'])
-def update_product():
-    return render_template('updateProduct.html')
+    owner_id = user_id
+    query = Product.insert().values(
+      owner_id = owner_id,
+      name = name,
+      shortname = sname,
+      category = category,
+      publish_date = publish_date,
+      price = price,
+      stock = stock
+    )
+    conn.execute(query)
+    return redirect(url_for('sell_product'))
+  
+  return render_template('updateProduct.html', product = {})
 
+@app.route('/update_product/<product_id>' , methods=['GET', 'POST'])
+def update_product(product_id):
+  query = select([Product]).where(Product.c.product_id == product_id)
+  product = conn.execute(query).fetchone()
 
-@app.route('/delete_product', methods=['GET'])
-def delete_product():
-    return render_template('deleteProduct.html')
+  if request.method == 'POST':
+    name = request.form['name']
+    sname = request.form['shortname']
+    category = request.form['category']
+    publish_date = request.form['publish_date']
+    price = request.form['price']
+    stock = request.form['stock']
 
+    owner_id = user_id
+    query = update(Product).where(Product.c.product_id == product_id).values(
+      product_id = product_id,
+      owner_id = owner_id,
+      name = name,
+      shortname = sname,
+      category = category,
+      publish_date = publish_date,
+      price = price,
+      stock = stock
+    )
+    conn.execute(query)
+    return redirect(url_for('sell_product'))
+  
+  return render_template('updateProduct.html', product = product)
+
+@app.route('/delete_product/<product_id>' , methods=['GET'])
+def delete_product(product_id):
+  query = Product.delete().where(Product.c.product_id == product_id)
+  conn.execute(query)
+  return redirect(url_for('sell_product'))
 
 def update_cart_of_user(user, new_cart):
     global cart
     cart[user] = new_cart
-
 
 @app.route('/add_item/<int:product_id>', methods=['GET', 'POST'])
 def add_item(product_id):
@@ -223,10 +261,11 @@ def check_buy(user_id_on):
         change_budget(user_id_on, budget)
         user_cart = list()
         update_cart_of_user(user_id, user_cart)
-        return render_template('main.html')
+        return redirect(url_for('main'))
     else:
         return render_template('cart.html', cart=user_cart, total_price=total_price)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+  app.run(debug = True)
+
