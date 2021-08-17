@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block body %}
+    {% block inside_body %}{% endblock inside_body %}
+<div class="container">
+    <div class="row">
+        <div class="col md-12">
+{#            <h2>#}
+{#                {% if data_name %}#}
+{#                {{ data_name }} List#}
+{#                {% else %}#}
+{#                Default List#}
+{#                {% endif %}#}
+{#                {% if current_user.is_admin %}#}
+{#                <button type="button" class="btn btn-success  pull-right" data-toggle="modal" data-target="#addModal">Add</button>#}
+{#                <button class="btn btn-warning  pull-right" id="editButton">Edit</button>#}
+{#                <button class="btn btn-danger  pull-right" id="deleteButton">Delete</button>#}
+{#                {% endif %}#}
+{#            </h2>#}
+            <table class="table" id="datalist" style="width:100%">
+                {% block data %}
+                {% endblock data %}
+            </table>
+            <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content text-center">
+                        {% block insert_modal %}
+                        {% endblock insert_modal %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% block script %}
+{% endblock script %}
+{% endblock body %}

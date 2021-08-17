@@ -1,9 +1,36 @@
-{% extends "base.html" %}
-{% block head %}   
+{% extends "datatable.html" %}
+{% block inside_body %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="/">Teknoland</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+            aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/main">Home</a>
+                </li>
+            </ul>
+        </div>
+        <div class="navbar-nav">
+            {% if user_id == 99999 %}
+                <a href="{{url_for('sell_product')}}" class="nav-item nav-link" > Sell Product </a>
+            {% endif %}
+            {% if user_id != -1 %}
+                <a href="{{url_for('show_cart')}}" class="nav-item nav-link" > Cart </a>
+                <a href="{{url_for('update_budget')}}" class="nav-item nav-link" > Update Budget </a>
+                <a href="{{url_for('update_user')}}" class="nav-item nav-link" > User Settings </a>
+            {% else %}
+                <a class="nav-item nav-link" href="/">Login</a>
+            {% endif %}
 
-{% endblock %}
-{% block body %}
-    <nav class="navbar navbar-light bg-light">
+        </div>
+</nav>
+
+{% endblock inside_body %}
+
+   <nav class="navbar navbar-light bg-light">
     <a href="{{url_for('show_cart')}}" class="btn btn-outline-primary" > Cart </a>
     <form class="form-inline" style="margin-left:auto">
         <a href="{{url_for('update_user')}}" class="btn btn-info" > User Settings </a>
@@ -11,32 +38,62 @@
     </form>
   </nav>
 
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th scope="col">Name</th>
-        <th scope="col">Short Name</th>
-        <th scope="col">Category</th>
-          <th scope="col">Price(TL) without sale</th>
-        <th scope="col">Sale %</th>
-        <th scope="col">Price(TL)</th>
-      </tr>
-    </thead>
+    {% block data %}
+
+        <thead>
+            <th>Name</th>
+            <th>Short Name</th>
+            <th>Category</th>
+            <th>Price(TL) without sale</th>
+            <th>Sale %</th>
+            <th>Price(TL)</th>
+        </thead>
+{#    <thead>#}
+{#      <tr>#}
+{#        <th scope="col">Name</th>#}
+{#        <th scope="col">Short Name</th>#}
+{#        <th scope="col">Category</th>#}
+{#          <th scope="col">Price(TL) without sale</th>#}
+{#        <th scope="col">Sale %</th>#}
+{#        <th scope="col">Price(TL)</th>#}
+{#      </tr>#}
+{#    </thead>#}
     <tbody>
-        {%for product in products%}
+        {% for product in products %}
             <tr>
                 <td>{{product.name}}</td>
                 <td>{{product.shortname}}</td>
                 <td>{{product.category}}</td>
                 <td>{{product.price }}</td>
-                <td>% {{product.salePercentage}}</td>
+                <td>{{product.salePercentage}}</td>
                 <td>{{product.price - (product.price * product.salePercentage/100) }}</td>
-
                 <td>
-                  <a href="{{url_for('show_cart', product_id=product.product_id)}}" class="btn btn-outline-primary" > Add to Cart</a>
+                  <a href="{{url_for('add_item', product_id=product.product_id)}}" class="btn btn-outline-primary" > Add to Cart</a>
                 </td>
             </tr>
         {%endfor%}
     </tbody>
-  </table>
-{% endblock %}
+   {% endblock data %}
+
+
+{% block script %}
+<script>
+   $(document).ready(function () {
+        var table = $('#datalist').DataTable({
+            "scrollY": "350px",
+            "paging": false,
+            "lengthChange": false
+        });
+
+        $('#datalist tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            }
+            else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+            }
+        });
+    });
+</script>
+{% endblock script %}

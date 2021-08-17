@@ -16,12 +16,37 @@
 </style>
 
 <body>
-  <div class="container">
-    <a href="{{url_for('update_budget')}}" class="btn btn-outline-primary" > Update Budget </a>  
-    <div style="padding-top: 20px;"/>
-    <a href="{{url_for('sell_product')}}" class="btn btn-outline-primary" > Sell Product </a>
-    <div style="padding-top: 20px;"/>
-    <a href="{{url_for('buy_product')}}" class="btn btn-outline-primary" > Buy Product </a>
-  </div>
+
+     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="/">Teknoland</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+            aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/main">Home</a>
+                </li>
+            </ul>
+        </div>
+        <div class="navbar-nav">
+            {% if user_id == 99999 %}
+                <a href="{{url_for('sell_product')}}" class="nav-item nav-link" > Sell Product </a>
+            {% endif %}
+            {% if user_id != -1 %}
+                <a href="{{url_for('buy_product')}}" class="nav-item nav-link" > Buy Product </a>
+                <a href="{{url_for('update_budget')}}" class="nav-item nav-link" > Update Budget </a>
+                <a href="{{url_for('update_user')}}" class="nav-item nav-link" > User Settings </a>
+            {% else %}
+                <a class="nav-item nav-link" href="/">Login</a>
+            {% endif %}
+        </div>
+</nav>
+
+
+
+
+
 </body>
 {% endblock %}
