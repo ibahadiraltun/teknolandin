@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import select, update, and_, func
+from sqlalchemy import select, update, and_, func, desc
 from sqlalchemy.orm import Session
 import psycopg2
 from datetime import datetime
@@ -337,6 +337,12 @@ def return_a_product(satis_id):
         user_id=user_id)
     products_sold = conn.execute(query).fetchall()
     return render_template('return_product.html', products=products_sold, usr=user_id)
+
+@app.route('/discounts', methods=['GET'])
+def discounts():
+    query = select([Product]).order_by(desc(Product.c.salePercentage)).where(Product.c.salePercentage > 0)
+    sellable_products = conn.execute(query).fetchall()
+    return render_template('discounts.html', products=sellable_products)
 
 
 if __name__ == '__main__':
