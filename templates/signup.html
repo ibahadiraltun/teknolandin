@@ -34,33 +34,42 @@ body{
 <div class="error text-center">{{error}}</div>
 <div class="login-form">
   <form action = "" method = "post" class="form-signin">
-    <h2 class="text-center">Sign Up</h2>       
+    {%if user == {} %}
+      <h2 class="text-center">Sign Up</h2>
+    {%else%}
+      <h2 class="text-center">User Settings</h2>
+    {%endif%}
+
     <div class="form-group">
-      <input type="text" class="form-control" name="name" placeholder="Name" required="required">
+      <input type="text" class="form-control" name="name" placeholder="Name" required="required" value="{{user.name}}">
     </div>
     <div class="form-group">
-      <input type="text" class="form-control" name="lastname" placeholder="Lastname" required="required" >
+      <input type="text" class="form-control" name="lastname" placeholder="Lastname" required="required" value="{{user.lname}}">
     </div>
     <div class="form-group">
-      <input type="email" class="form-control" name="email" placeholder="Email" required="required" >
+      <input type="email" class="form-control" name="email" placeholder="Email" required="required" value="{{user.email}}">
     </div>
     <div class="form-group">
-      <input type="tel" class="form-control" name="phone" placeholder="888 888 8888" pattern="[0-9]{3} [0-9]{3} [0-9]{4}" maxlength="12"   required/>    
+      <input type="tel" class="form-control" name="phone" placeholder="888 888 8888" pattern="[0-9]{3} [0-9]{3} [0-9]{4}" maxlength="12" value="{{user.phone}}" required/>    
       <label style="font-size:10px;padding-left:20px"> Eg : 552 222 2224  </label>         
     </div>
     
     <div class="form-group">
-      <input type="text" class="form-control" name="address" placeholder="Address" required="required" >
+      <input type="text" class="form-control" name="address" placeholder="Address" required="required" value="{{user.address}}">
     </div>
     
     <div class="form-group">
-        <input type="password" class="form-control" name="password" placeholder="Password" minlength="4" required="required" >
+        <input type="password" class="form-control" name="password" placeholder="Password" minlength="4" required="required">
     </div>
     <div class="form-group">
-        <input type="password" class="form-control" name="confirmpassword" placeholder="Confirm Password" required="required">
+        <input type="password" class="form-control" name="confirmpassword" placeholder="Confirm Password" required="required"">
     </div>
     <div class="form-group">
+      {%if user == {} %}
         <button type="submit" name="submit" class="btn btn-lg btn-primary btn-block">Sign Up</button>
+      {%else%}  
+        <button type="submit" name="submit" class="btn btn-lg btn-primary btn-block">Update</button>
+      {%endif%}
     </div>
           
   </form>
