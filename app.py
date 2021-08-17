@@ -11,7 +11,7 @@ from datetime import datetime
 app = Flask(__name__)
 
 # connection to database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:tdg123@localhost/teknolandin'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:abc123@localhost/postgres'
 db = SQLAlchemy(app)
 session = Session(db.engine)
 conn = db.engine.connect()
@@ -191,8 +191,6 @@ def delete_product(product_id):
   conn.execute(query)
   return redirect(url_for('sell_product'))
 
-if __name__ == '__main__':
-  app.run(debug = True)
 def update_cart_of_user(user, new_cart):
     global cart
     cart[user] = new_cart
@@ -263,10 +261,11 @@ def check_buy(user_id_on):
         change_budget(user_id_on, budget)
         user_cart = list()
         update_cart_of_user(user_id, user_cart)
-        return render_template('main.html')
+        return redirect(url_for('main'))
     else:
         return render_template('cart.html', cart=user_cart, total_price=total_price)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+  app.run(debug = True)
+
