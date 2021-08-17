@@ -35,6 +35,7 @@
                 <a href="{{url_for('sell_product')}}" class="nav-item nav-link" > Sell Product </a>
             {% endif %}
             {% if user_id != -1 %}
+                <a href="{{url_for('discounts')}}" class="nav-item nav-link" > Discounts </a>
                 <a href="{{url_for('return_page')}}" class="nav-item nav-link" > Previous Purchases & Return a Product </a>
                 <a href="{{url_for('buy_product')}}" class="nav-item nav-link" > Buy Product </a>
                 <a href="{{url_for('update_budget')}}" class="nav-item nav-link" > Update Budget </a>
